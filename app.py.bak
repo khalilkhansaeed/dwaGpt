@@ -7,11 +7,12 @@ import datetime
 
 # ==== Setup ====
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
-ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
-PHONE_NUMBER_ID = os.getenv("PHONE_NUMBER_ID")
-VERIFY_TOKEN = os.getenv("VERIFY_TOKEN")
+OPENAI_API_KEY = "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"
+openai.api_key = OPENAI_API_KEY
 
+ACCESS_TOKEN = "EAAJYudkKwPIBO3q2JeyLjaz01iZBPZBzFgne7KBnFy7lF8z99lNflUjZBUylnGvzVYpXIWMcSbQyxye6NZAles7Rb3ycVbke45pUJZBt0XzZCmqenUi31uZB2Fg6rxM0GJh4U2vtfJisYVMlWFSDxFtWYv4VZAPSmsoNZB9WcIkHlsGOszUpqZBSDpXZBWiilUL6TR1BhRu0aZCazgvH3lQ7jRB2EnfZAemlj3K26jeD6a8OD2caq"
+PHONE_NUMBER_ID = "700453763142801"
+VERIFY_TOKEN = "dwaGPTtoken2025"
 
 user_histories = {}
 
