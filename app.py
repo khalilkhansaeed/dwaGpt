@@ -3,6 +3,7 @@ import requests
 import os
 import base64
 import openai
+from openai import OpenAI
 import datetime
 
 # ==== Setup ====
@@ -41,6 +42,7 @@ def ask_chatgpt_with_context(user_id, new_message):
     context = [system_prompt] + history[-5:]
     context.append({"role": "user", "content": new_message})
 
+    client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     response = openai.ChatCompletion.create(
         model="gpt-4o-mini",
         messages=context,
