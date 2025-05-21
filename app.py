@@ -19,6 +19,11 @@ def log_message(user_id, message, response):
         f.write(f"\n--- {datetime.datetime.now()} ---\n")
         f.write(f"User ID: {user_id}\nMessage: {message}\nResponse: {response}\n")
 
+@app.route("/test-send")
+def test_send():
+    send_message("YOUR_PHONE_NUMBER", "This is a test from DwaGPT")
+    return "Test sent"
+
 # ==== ChatGPT ====
 def ask_chatgpt_with_context(user_id, new_message):
     history = user_histories.get(user_id, [])
