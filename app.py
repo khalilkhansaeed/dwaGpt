@@ -118,10 +118,15 @@ def webhook():
             return challenge, 200
         return "Verification failed", 403
 
-    elif request.method == 'POST':
-        try:
-            data = request.get_json()
-            print("🚀 Raw webhook data:", data)
+elif request.method == 'POST':
+    try:
+        data = request.get_json(force=True)
+        print("🔔 Incoming webhook JSON:")
+        print(data)
+
+        if not data or "entry" not in data:
+            print("❌ Invalid or empty webhook data.")
+            return "ok", 200
 
             changes = data['entry'][0]['changes'][0]['value']
             if 'messages' not in changes:
@@ -206,4 +211,5 @@ def extract_text_from_image_bytes(image_bytes):
 # ==== Run ====
 
 if __name__ == "__main__":
-    app.run(port=5000)
+    app.run(host='0.0.0.0', port=5000)
+
