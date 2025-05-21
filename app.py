@@ -108,35 +108,33 @@ app = Flask(__name__)
 def home():
     return "OK", 200
 
-@app.route('/webhook', methods=['GET', 'POST'])
+@app.route("/webhook", methods=["GET", "POST"])
 def webhook():
-    if request.method == 'GET':
+    if request.method == "GET":
         mode = request.args.get("hub.mode")
         token = request.args.get("hub.verify_token")
         challenge = request.args.get("hub.challenge")
-        if mode == "subscribe" and token == VERIFY_TOKEN:
-            return challenge, 200
-        return "Verification failed", 403
 
-    if request.method == 'POST':
+        if mode == "subscribe" and token == VERIFY_TOKEN:
+            print("✅ Webhook verified")
+            return challenge, 200
+        else:
+            print("❌ Verification failed")
+            return "Verification failed", 403
+
+    if request.method == "POST":
         try:
-            data = request.get_json(force=True)
-            print("🔔 Incoming webhook JSON:")
-            print(data)
-        except Exception as e:
-            print("❌ Error parsing webhook POST:", e)
-    
-        return "ok", 200
+            data = request.get_json()
+            print("📥 Incoming POST data:", data)
 
             if not data or "entry" not in data:
-                print("❌ Invalid or empty webhook data.")
-                return "ok", 200
+                print("⚠️ Invalid POST data")
+                return "Invalid data", 400
 
             changes = data['entry'][0]['changes'][0]['value']
-
             if 'messages' not in changes:
-                print("⚠️ No 'messages' in webhook payload.")
-                return "ok", 200
+                print("📭 No messages found in webhook")
+                return "No messages", 200
 
             msg = changes['messages'][0]
             sender = msg['from']
@@ -150,7 +148,7 @@ def webhook():
                 image_bytes = download_image(media_id)
                 user_message_or_ocr_text = extract_text_from_image_bytes(image_bytes)
 
-            print(f"📩 Message from {sender}: {user_message_or_ocr_text}")
+            print(f"🔍 Received message from {sender}: {user_message_or_ocr_text}")
 
             med_info = lookup_medicine_info(user_message_or_ocr_text)
 
@@ -166,12 +164,11 @@ def webhook():
                 reply = ask_chatgpt_with_context(sender, user_message_or_ocr_text)
 
             send_message(sender, reply)
+            return "ok", 200
 
         except Exception as e:
-            print("❌ Error during webhook handling:", e)
-
-        return "ok", 200
-
+            print("❌ ERROR in webhook:", e)
+            return "Error processing", 500
 
 # ==== OCR Functions ====
 
