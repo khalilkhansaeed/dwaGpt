@@ -100,18 +100,23 @@ def webhook():
             changes = data['entry'][0]['changes'][0]['value']
 
             if 'messages' not in changes:
+                print("No messages found in changes.")
                 return "ok", 200
 
             msg = changes['messages'][0]
             sender = msg['from']
+            print(f"Message from: {sender}")
             user_text = ""
 
             if msg.get("type") == "text":
                 user_text = msg['text']['body']
+                print(f"Text message received: {user_message_or_ocr_text}")
             elif msg.get("type") == "image":
                 media_id = msg['image']['id']
+                print(f"Image message received, media_id: {media_id}")
                 image_bytes = download_image(media_id)
                 user_text = extract_text_from_image_bytes(image_bytes)
+                print(f"Extracted OCR text: {user_message_or_ocr_text}")
 
             med_info = lookup_medicine_info(user_text)
 
@@ -123,13 +128,18 @@ def webhook():
                     f"🏪 Store: {med_info['store']}\n\n"
                     f"Ask if you want pros, cons, or alternatives 😊"
                 )
+                print("Replying with medicine info.")
             else:
                 reply = ask_chatgpt_with_context(sender, user_text)
+                print("Replying with ChatGPT answer.")
+
 
             send_message(sender, reply)
+            print("Message sent successfully.")
 
         except Exception as e:
-            print("Error:", e)
+            print("Error handling webhook:", e)
+            
 
         return "ok", 200
 
