@@ -116,8 +116,17 @@ def verify():
     else:
         return "Verification failed", 403
 
-@app.route("/webhook", methods=["POST"])
+@app.route('/webhook', methods=['GET', 'POST'])
 def webhook():
+    if request.method == 'GET':
+        token = request.args.get('hub.verify_token')
+        challenge = request.args.get('hub.challenge')
+        if token == VERIFY_TOKEN:
+            return challenge, 200
+        return 'Verification token mismatch', 403
+    elif request.method == 'POST':
+        # Handle incoming messages
+        return 'Event received', 200    
     data = request.get_json()
     print("Incoming message:", data)
 
