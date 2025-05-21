@@ -9,7 +9,7 @@ import datetime
 openai.api_key = os.getenv("OPENAI_API_KEY")
 ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
 PHONE_NUMBER_ID = os.getenv("PHONE_NUMBER_ID")
-VERIFY_TOKEN = os.getenv("VERIFY_TOKEN")
+VERIFY_TOKEN = "dwaGPTtoken2025"  # the same one you used in Meta
 
 user_histories = {}
 
