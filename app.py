@@ -118,11 +118,11 @@ def webhook():
             return challenge, 200
         return "Verification failed", 403
 
-elif request.method == 'POST':
-    try:
-        data = request.get_json(force=True)
-        print("🔔 Incoming webhook JSON:")
-        print(data)
+        elif request.method == 'POST':
+            try:
+                data = request.get_json(force=True)
+                print("🔔 Incoming webhook JSON:")
+                print(data)
 
         if not data or "entry" not in data:
             print("❌ Invalid or empty webhook data.")
