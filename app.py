@@ -78,6 +78,9 @@ def send_message(to, message):
 
 # ==== Flask App ====
 app = Flask(__name__)
+@app.route("/", methods=["GET"])
+def home():
+    return "OK", 200
 
 @app.route('/webhook', methods=['GET', 'POST'])
 def webhook():
