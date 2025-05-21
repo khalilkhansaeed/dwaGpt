@@ -123,6 +123,10 @@ def webhook():
             data = request.get_json(force=True)
             print("🔔 Incoming webhook JSON:")
             print(data)
+        except Exception as e:
+            print("❌ Error parsing webhook POST:", e)
+    
+        return "ok", 200
 
             if not data or "entry" not in data:
                 print("❌ Invalid or empty webhook data.")
