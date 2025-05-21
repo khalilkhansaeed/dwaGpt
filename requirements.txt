@@ -1,4 +1,4 @@
-Flask
+Flask==2.2.5
+gunicorn
 requests
 openai
-python-dotenv
