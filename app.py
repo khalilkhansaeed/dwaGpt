@@ -15,9 +15,9 @@ print("🔑 OpenAI Key Loaded:", bool(openai.api_key))
 openai.api_key = OPENAI_API_KEY
 
     
-ACCESS_TOKEN = "EAAJYudkKwPIBOxCvbAZBIgQTudwZBfzlkyCVT5KeXw80IfJRZAum7csuZAdZCYmb018CcQnO7jxnSQfh2Sl5AnJPDzMPmcilCkq1H6S8aZCBekR7QTeCr3vXZB12OCNF5TLWKq6qJopENXZAOnVz4xd0t1VzS1RBxqm3jQbzQjVlsXCfcIG1GEfWbZBpt5QEtwZBDOJgUK2t35PAZDZD"
-PHONE_NUMBER_ID = "700453763142801"
-VERIFY_TOKEN = "dwaGPTtoken2025"
+ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
+PHONE_NUMBER_ID = os.getenv("PHONE_NUMBER_ID")
+VERIFY_TOKEN = os.getenv("VERIFY_TOKEN")
 
 user_histories = {}
 
