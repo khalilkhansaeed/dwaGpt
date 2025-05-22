@@ -2,9 +2,10 @@ from flask import Flask, request
 import requests
 import os
 import base64
-import openai
+from openai import OpenAI
 import datetime
 
+client = OpenAI()
 # ==== Setup ====
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not openai.api_key:
@@ -12,7 +13,7 @@ if not openai.api_key:
 else:
     print("✅ OPENAI_API_KEY loaded successfully.")
 print("🔑 OpenAI Key Loaded:", bool(openai.api_key))
-openai.api_key = OPENAI_API_KEY
+client = OpenAI(api_key=OPENAI_API_KEY)
 
     
 ACCESS_TOKEN = "EAAJYudkKwPIBOxCvbAZBIgQTudwZBfzlkyCVT5KeXw80IfJRZAum7csuZAdZCYmb018CcQnO7jxnSQfh2Sl5AnJPDzMPmcilCkq1H6S8aZCBekR7QTeCr3vXZB12OCNF5TLWKq6qJopENXZAOnVz4xd0t1VzS1RBxqm3jQbzQjVlsXCfcIG1GEfWbZBpt5QEtwZBDOJgUK2t35PAZDZD"
@@ -48,8 +49,8 @@ def ask_chatgpt_with_context(user_id, new_message):
     context = [system_prompt] + history[-5:]
     context.append({"role": "user", "content": new_message})
 
-    response = openai.ChatCompletion.create(
-        model="gpt-4o-mini",
+    response = client.chat.completions.create(
+        model="gpt-4o",
         messages=context,
         max_tokens=150,
         temperature=0.8,
