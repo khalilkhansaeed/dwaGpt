@@ -3,15 +3,16 @@ import requests
 import os
 import base64
 import openai
-from openai import OpenAI
 import datetime
 
 # ==== Setup ====
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
-ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
-PHONE_NUMBER_ID = os.getenv("PHONE_NUMBER_ID")
-VERIFY_TOKEN = "dwaGPTtoken2025"  # Replace with your actual verify token
+OPENAI_API_KEY = "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"
+openai.api_key = OPENAI_API_KEY
+
+ACCESS_TOKEN = "EAAJYudkKwPIBOxCvbAZBIgQTudwZBfzlkyCVT5KeXw80IfJRZAum7csuZAdZCYmb018CcQnO7jxnSQfh2Sl5AnJPDzMPmcilCkq1H6S8aZCBekR7QTeCr3vXZB12OCNF5TLWKq6qJopENXZAOnVz4xd0t1VzS1RBxqm3jQbzQjVlsXCfcIG1GEfWbZBpt5QEtwZBDOJgUK2t35PAZDZD"
+PHONE_NUMBER_ID = "700453763142801"
+VERIFY_TOKEN = "dwaGPTtoken2025"
 
 user_histories = {}
 
@@ -42,7 +43,6 @@ def ask_chatgpt_with_context(user_id, new_message):
     context = [system_prompt] + history[-5:]
     context.append({"role": "user", "content": new_message})
 
-    client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     response = openai.ChatCompletion.create(
         model="gpt-4o-mini",
         messages=context,
@@ -106,71 +106,60 @@ def send_message(to, message):
 
 app = Flask(__name__)
 
-@app.route("/", methods=["GET"])
-def home():
-    return "OK", 200
+@app.route("/webhook", methods=["GET"])
+def verify():
+    mode = request.args.get("hub.mode")
+    token = request.args.get("hub.verify_token")
+    challenge = request.args.get("hub.challenge")
 
-@app.route("/webhook", methods=["GET", "POST"])
+    if mode == "subscribe" and token == VERIFY_TOKEN:
+        return challenge, 200
+    else:
+        return "Verification failed", 403
+
+@app.route("/webhook", methods=["POST"])
 def webhook():
-    if request.method == "GET":
-        mode = request.args.get("hub.mode")
-        token = request.args.get("hub.verify_token")
-        challenge = request.args.get("hub.challenge")
+    data = request.get_json()
+    print("Incoming message:", data)
 
-        if mode == "subscribe" and token == VERIFY_TOKEN:
-            print("✅ Webhook verified")
-            return challenge, 200
-        else:
-            print("❌ Verification failed")
-            return "Verification failed", 403
+    try:
+        changes = data['entry'][0]['changes'][0]['value']
 
-    if request.method == "POST":
-        try:
-            data = request.get_json()
-            print("📥 Incoming POST data:", data)
-
-            if not data or "entry" not in data:
-                print("⚠️ Invalid POST data")
-                return "Invalid data", 400
-
-            changes = data['entry'][0]['changes'][0]['value']
-            if 'messages' not in changes:
-                print("📭 No messages found in webhook")
-                return "No messages", 200
-
-            msg = changes['messages'][0]
-            sender = msg['from']
-            user_message_or_ocr_text = ""
-
-            if msg.get("type") == "text":
-                user_message_or_ocr_text = msg['text']['body']
-
-            elif msg.get("type") == "image":
-                media_id = msg['image']['id']
-                image_bytes = download_image(media_id)
-                user_message_or_ocr_text = extract_text_from_image_bytes(image_bytes)
-
-            print(f"🔍 Received message from {sender}: {user_message_or_ocr_text}")
-
-            med_info = lookup_medicine_info(user_message_or_ocr_text)
-
-            if med_info:
-                reply = (
-                    f"💊 *{med_info['name']}*\n"
-                    f"🧪 Formula: {med_info['formula']}\n"
-                    f"💰 Price: {med_info['price']}\n"
-                    f"🏪 Store: {med_info['store']}\n\n"
-                    f"Ask if you want pros, cons, or alternatives 😊"
-                )
-            else:
-                reply = ask_chatgpt_with_context(sender, user_message_or_ocr_text)
-
-            send_message(sender, reply)
+        if 'messages' not in changes:
+            print("No message content found.")
             return "ok", 200
 
-        except Exception as e:
-            print("❌ ERROR in webhook:", e)
-            return "Error processing", 500
+        msg = changes['messages'][0]
+        sender = msg['from']
+        user_message_or_ocr_text = ""
+
+        if msg.get("type") == "text":
+            user_message_or_ocr_text = msg['text']['body']
+
+        elif msg.get("type") == "image":
+            media_id = msg['image']['id']
+            image_bytes = download_image(media_id)
+            user_message_or_ocr_text = extract_text_from_image_bytes(image_bytes)
+
+        med_info = lookup_medicine_info(user_message_or_ocr_text)
+
+        if med_info:
+            reply = (
+                f"💊 *{med_info['name']}*\n"
+                f"🧪 Formula: {med_info['formula']}\n"
+                f"💰 Price: {med_info['price']}\n"
+                f"🏪 Store: {med_info['store']}\n\n"
+                f"Ask if you want pros, cons, or alternatives 😊"
+            )
+        else:
+            reply = ask_chatgpt_with_context(sender, user_message_or_ocr_text)
+
+        send_message(sender, reply)
+
+    except Exception as e:
+        print("Error:", e)
+
+    return "ok", 200
 
 # ==== OCR Functions ====
 
@@ -210,5 +199,4 @@ def extract_text_from_image_bytes(image_bytes):
 # ==== Run ====
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
-
+    app.run(port=5000)
