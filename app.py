@@ -7,6 +7,7 @@ import datetime
 
 # ==== Setup ====
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+print("🔑 OpenAI Key Loaded:", bool(openai.api_key))
 openai.api_key = OPENAI_API_KEY
 if not openai.api_key:
     print("❌ OPENAI_API_KEY not found!")
