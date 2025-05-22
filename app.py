@@ -5,7 +5,6 @@ import base64
 from openai import OpenAI
 import datetime
 
-client = OpenAI()
 # ==== Setup ====
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not openai.api_key:
