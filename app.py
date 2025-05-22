@@ -8,7 +8,9 @@ import datetime
 # ==== Setup ====
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 openai.api_key = OPENAI_API_KEY
-
+if not openai.api_key:
+    print("❌ OPENAI_API_KEY not found!")
+    
 ACCESS_TOKEN = "EAAJYudkKwPIBOxCvbAZBIgQTudwZBfzlkyCVT5KeXw80IfJRZAum7csuZAdZCYmb018CcQnO7jxnSQfh2Sl5AnJPDzMPmcilCkq1H6S8aZCBekR7QTeCr3vXZB12OCNF5TLWKq6qJopENXZAOnVz4xd0t1VzS1RBxqm3jQbzQjVlsXCfcIG1GEfWbZBpt5QEtwZBDOJgUK2t35PAZDZD"
 PHONE_NUMBER_ID = "700453763142801"
 VERIFY_TOKEN = "dwaGPTtoken2025"
