@@ -2,7 +2,7 @@ from flask import Flask, request
 import requests
 import os
 import base64
-from openai import OpenAI
+import openai
 import datetime
 
 # ==== Setup ====
@@ -12,7 +12,7 @@ if not openai.api_key:
 else:
     print("✅ OPENAI_API_KEY loaded successfully.")
 print("🔑 OpenAI Key Loaded:", bool(openai.api_key))
-client = OpenAI(api_key=OPENAI_API_KEY)
+openai.api_key = OPENAI_API_KEY
 
     
 ACCESS_TOKEN = "EAAJYudkKwPIBOxCvbAZBIgQTudwZBfzlkyCVT5KeXw80IfJRZAum7csuZAdZCYmb018CcQnO7jxnSQfh2Sl5AnJPDzMPmcilCkq1H6S8aZCBekR7QTeCr3vXZB12OCNF5TLWKq6qJopENXZAOnVz4xd0t1VzS1RBxqm3jQbzQjVlsXCfcIG1GEfWbZBpt5QEtwZBDOJgUK2t35PAZDZD"
@@ -48,8 +48,8 @@ def ask_chatgpt_with_context(user_id, new_message):
     context = [system_prompt] + history[-5:]
     context.append({"role": "user", "content": new_message})
 
-    response = client.chat.completions.create(
-        model="gpt-4o",
+    response = openai.ChatCompletion.create(
+        model="gpt-4o-mini",
         messages=context,
         max_tokens=150,
         temperature=0.8,
@@ -206,4 +206,3 @@ def extract_text_from_image_bytes(image_bytes):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
     app.run(host="0.0.0.0", port=port)
-
